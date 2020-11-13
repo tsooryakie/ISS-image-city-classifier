@@ -1,0 +1,7 @@
+.idea/
+iss_image_data/
+__pycache__/
+models_trained/
+*.stats
+*.out
+*.zip
