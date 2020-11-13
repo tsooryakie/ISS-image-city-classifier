@@ -2,6 +2,11 @@
 iss_image_data/
 __pycache__/
 models_trained/
+raw_training_data/
+slurm_scripts/
+classification_reports/
+visualisations/
+Inference.ipynb
 *.stats
 *.out
 *.zip
