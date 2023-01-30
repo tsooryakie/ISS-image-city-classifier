@@ -6,11 +6,12 @@ Version 26/07/2020
 """
 import os
 import sys
+
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy import stats
 import seaborn as sns
+from scipy import stats
 
 
 def classify_image(img: str, make_plots=False) -> None:
@@ -44,13 +45,27 @@ def classify_image(img: str, make_plots=False) -> None:
         if make_plots:
             plt.plot(edges[:-1], histogram, color=colour)
 
-    histogram_mode = total_mode/3
+    histogram_mode = total_mode / 3
 
     if make_plots:
         if histogram_mode < 15:
-            plt.title("Histogram for the night time image: " + image_name + " " + "(" + image_city + ")")
+            plt.title(
+                "Histogram for the night time image: "
+                + image_name
+                + " "
+                + "("
+                + image_city
+                + ")"
+            )
         else:
-            plt.title("Histogram for the day time image: " + image_name + " " + "(" + image_city + ")")
+            plt.title(
+                "Histogram for the day time image: "
+                + image_name
+                + " "
+                + "("
+                + image_city
+                + ")"
+            )
         plt.xlabel("Digital Number (DN)")
         plt.ylabel("Frequency")
         plt.legend(["Red", "Green", "Blue"])
@@ -82,4 +97,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

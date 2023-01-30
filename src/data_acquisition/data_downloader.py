@@ -9,6 +9,7 @@ Version: 25/06/2020
 
 import os
 import sys
+
 import pandas as pd
 
 
@@ -30,9 +31,23 @@ def download_images(csv: str) -> None:
 
         if not os.path.exists("../iss_image_data/train/" + raw_csv["CITY"][i]):
             os.mkdir("../iss_image_data/train/" + raw_csv["CITY"][i])
-            os.system("mv " + raw_csv["IMAGE"][i] + ".jpg" + " ../iss_image_data/train/" + raw_csv["CITY"][i] + "/")
+            os.system(
+                "mv "
+                + raw_csv["IMAGE"][i]
+                + ".jpg"
+                + " ../iss_image_data/train/"
+                + raw_csv["CITY"][i]
+                + "/"
+            )
         else:
-            os.system("mv " + raw_csv["IMAGE"][i] + ".jpg" + " ../iss_image_data/train/" + raw_csv["CITY"][i] + "/")
+            os.system(
+                "mv "
+                + raw_csv["IMAGE"][i]
+                + ".jpg"
+                + " ../iss_image_data/train/"
+                + raw_csv["CITY"][i]
+                + "/"
+            )
 
     return
 

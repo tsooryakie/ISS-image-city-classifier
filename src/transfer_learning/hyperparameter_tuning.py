@@ -5,13 +5,20 @@ observed from previous experiments.
 Version: 10/08/2020
 """
 import sys
+from typing import Dict
+
+import matplotlib.pyplot as plt
 import numpy as np
 import torch
-import torch.optim as optim
 import torch.nn as nn
-from TrainModels import load_dataset_and_transforms, initialise_model, get_parameters_to_learn, train_model
-import matplotlib.pyplot as plt
-from typing import Dict
+import torch.optim as optim
+
+from model_training import (
+    load_dataset_and_transforms,
+    initialise_model,
+    get_parameters_to_learn,
+    train_model,
+)
 
 
 def generate_hyperparameters(num_loops: int) -> Dict:
@@ -21,26 +28,39 @@ def generate_hyperparameters(num_loops: int) -> Dict:
     :param num_loops: Number of hyperparameter loops to test
     :return:
     """
-    learning_rates = [np.round(np.random.uniform(0.00005, 0.00015), 9) for learning_rate in range(num_loops)]
+    learning_rates = [
+        np.round(np.random.uniform(0.00005, 0.00015), 9)
+        for learning_rate in range(num_loops)
+    ]
     print("Smallest Learning Rate: " + str(np.min(learning_rates)))
     print("Largest Learning Rate: " + str(np.max(learning_rates)))
     batch_sizes = [np.random.randint(60, 70) for batch_size in range(num_loops)]
     print("Smallest Batch Size: " + str(np.min(batch_sizes)))
     print("Largest Batch Size: " + str(np.max(batch_sizes)))
-    weight_decays = [np.round(np.random.uniform(0.0005, 0.001), 9) for weight_decay in range(num_loops)]
+    weight_decays = [
+        np.round(np.random.uniform(0.0005, 0.001), 9)
+        for weight_decay in range(num_loops)
+    ]
     print("Smallest Weight Decay: " + str(np.min(weight_decays)))
     print("Largest Weight Decay: " + str(np.max(weight_decays)))
 
     hyperparameters = {
         "learning_rates": learning_rates,
         "batch_sizes": batch_sizes,
-        "weight_decays": weight_decays
+        "weight_decays": weight_decays,
     }
 
     fig = plt.figure(figsize=(10, 7))
     ax = fig.add_subplot(111, projection="3d")
-    hp_3d_plot = ax.scatter3D(learning_rates, batch_sizes, weight_decays,
-                 c=weight_decays, cmap="jet", marker="o", s=25)
+    hp_3d_plot = ax.scatter3D(
+        learning_rates,
+        batch_sizes,
+        weight_decays,
+        c=weight_decays,
+        cmap="jet",
+        marker="o",
+        s=25,
+    )
     colourbar = plt.colorbar(hp_3d_plot)
     ax.set_xlabel("Learning Rates")
     ax.set_ylabel("Batch Sizes")
@@ -63,33 +83,57 @@ def set_up_training_loops(model_name: str, hyperparameter_dict: Dict) -> None:
     print("Running Hyperparameter optimisation loop for: " + str(model_name))
     validation_metrics = []
     for i in range(len(hyperparameter_dict["learning_rates"])):
-        data_loaders, classes = load_dataset_and_transforms("../iss_image_data/experiment3/",
-                                                            uses_inception=False,
-                                                            augment=True,
-                                                            batch_size=hyperparameter_dict["batch_sizes"][i])
+        data_loaders, classes = load_dataset_and_transforms(
+            "../iss_image_data/experiment3/",
+            uses_inception=False,
+            augment=True,
+            batch_size=hyperparameter_dict["batch_sizes"][i],
+        )
 
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         model, input_size = initialise_model(model_name, len(classes), freeze_all=False)
         parameters_to_learn = get_parameters_to_learn(model, training_mode="finetuning")
         model = model.to(device)
-        optimizer = optim.Adam(parameters_to_learn,
-                               lr=hyperparameter_dict["learning_rates"][i],
-                               weight_decay=hyperparameter_dict["weight_decays"][i])
+        optimizer = optim.Adam(
+            parameters_to_learn,
+            lr=hyperparameter_dict["learning_rates"][i],
+            weight_decay=hyperparameter_dict["weight_decays"][i],
+        )
         criterion = nn.CrossEntropyLoss()
 
         print("\nStarting iteration " + str(i) + " with Hyperparameters: \n")
         print("Learning Rate: " + str(hyperparameter_dict["learning_rates"][i]))
         print("Batch Size: " + str(hyperparameter_dict["batch_sizes"][i]))
         print("Weight Decay: " + str(hyperparameter_dict["weight_decays"][i]))
-        model, history = train_model(model, data_loaders, device, criterion, optimizer, model_name,
-                                     uses_inception=False, epochs=15)
+        model, history = train_model(
+            model,
+            data_loaders,
+            device,
+            criterion,
+            optimizer,
+            model_name,
+            uses_inception=False,
+            epochs=15,
+        )
         validation_metrics.append(np.max(history["val_acc"]))
 
-    print("Best validaiton accuracy was achieved at iteration: " + str(np.argmax(validation_metrics)))
+    print(
+        "Best validaiton accuracy was achieved at iteration: "
+        + str(np.argmax(validation_metrics))
+    )
     print("Best performing hyperparameters were: \n")
-    print("Learning Rate: " + str(hyperparameter_dict["learning_rates"][np.argmax(validation_metrics)]))
-    print("Batch Size: " + str(hyperparameter_dict["batch_sizes"][np.argmax(validation_metrics)]))
-    print("Weight Decay: " + str(hyperparameter_dict["weight_decays"][np.argmax(validation_metrics)]))
+    print(
+        "Learning Rate: "
+        + str(hyperparameter_dict["learning_rates"][np.argmax(validation_metrics)])
+    )
+    print(
+        "Batch Size: "
+        + str(hyperparameter_dict["batch_sizes"][np.argmax(validation_metrics)])
+    )
+    print(
+        "Weight Decay: "
+        + str(hyperparameter_dict["weight_decays"][np.argmax(validation_metrics)])
+    )
 
     return
 

@@ -8,8 +8,9 @@ into the DataDownload.py script
 Version: 30/06/2020
 """
 import sys
-import pandas as pd
+
 import matplotlib.pyplot as plt
+import pandas as pd
 import seaborn as sns
 
 
@@ -34,7 +35,7 @@ def clean_data(data: pd.DataFrame) -> pd.DataFrame:
     data.dropna(axis=0, inplace=True)
 
     #  Transform all city entries into upper case and replace spaces in city names with underscore
-    #  This is done to match the DataDownloader.py and training directory format
+    #  This is done to match the data_downloader.py and training directory format
     data["CITY"] = data["CITY"].apply(lambda x: x.strip())
     data["CITY"] = data["CITY"].apply(lambda x: x.upper())
     data["CITY"] = data["CITY"].apply(lambda x: x.replace(" ", "_"))
@@ -59,7 +60,10 @@ def data_stats_and_plots(data: pd.DataFrame, plot_name: str) -> None:
 
     #  Print basic statistics about the data
     print("The total number of training samples is: " + str(len(data)))
-    print("The average number of samples per city is: " + str(len(data)/int(data["CITY"].nunique())))
+    print(
+        "The average number of samples per city is: "
+        + str(len(data) / int(data["CITY"].nunique()))
+    )
 
     #  Bar Chart of 15 most classified cities
     labels = data["CITY"].value_counts()[:15].index.tolist()
@@ -73,7 +77,9 @@ def data_stats_and_plots(data: pd.DataFrame, plot_name: str) -> None:
     plt.xlabel("Cities")
     plt.ylabel("Number of Classifications")
     plt.title("CAN Dataset: 15 Most Classified Cities")
-    plt.savefig("../visualisations/" + plot_name.split(".csv")[0] + "_most_classified.png")
+    plt.savefig(
+        "../visualisations/" + plot_name.split(".csv")[0] + "_most_classified.png"
+    )
 
     return
 
@@ -81,7 +87,7 @@ def data_stats_and_plots(data: pd.DataFrame, plot_name: str) -> None:
 def export_to_csv(data: pd.DataFrame, name: str) -> None:
     """
     This function takes the cleaned Pandas DataFrame, aggregates it
-    and then exports it as a .csv file usable in the DataDownloader.py script.
+    and then exports it as a .csv file usable in the data_downloader.py script.
     :return:
     """
     data = pd.DataFrame({"IMAGE": data["IMAGE"], "CITY": data["CITY"]})
@@ -92,10 +98,14 @@ def export_to_csv(data: pd.DataFrame, name: str) -> None:
 
 def main():
 
-    data = load_raw_csv(sys.argv[1])  # Takes path to .csv file from STDIN and loads the data
+    data = load_raw_csv(
+        sys.argv[1]
+    )  # Takes path to .csv file from STDIN and loads the data
     data = clean_data(data)  # Executes the clean data function and returns cleaned data
     data_stats_and_plots(data, sys.argv[2])  # Returns data statistics and plots
-    export_to_csv(data, sys.argv[2])  # Exports the cleaned dataset ready for DataDownloader.py script
+    export_to_csv(
+        data, sys.argv[2]
+    )  # Exports the cleaned dataset ready for data_downloader.py script
 
     return
 

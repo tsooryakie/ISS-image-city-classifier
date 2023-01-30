@@ -14,13 +14,18 @@ from imgaug import augmenters
 
 class Augmentation:
     def __init__(self):
-        self.augmentations = augmenters.Sequential([
-            augmenters.Sometimes(0.5, augmenters.Flipud(0.5)),
-            augmenters.Sometimes(0.5, augmenters.Fliplr(0.5)),
-            augmenters.Sometimes(0.5, augmenters.Rotate((-45, 45))),
-            augmenters.Sometimes(0.25, augmenters.ShearX((-20, 20))),
-            augmenters.Sometimes(0.1, augmenters.AdditiveGaussianNoise(scale=(0, 0.1*255)))
-        ], random_order=True)
+        self.augmentations = augmenters.Sequential(
+            [
+                augmenters.Sometimes(0.5, augmenters.Flipud(0.5)),
+                augmenters.Sometimes(0.5, augmenters.Fliplr(0.5)),
+                augmenters.Sometimes(0.5, augmenters.Rotate((-45, 45))),
+                augmenters.Sometimes(0.25, augmenters.ShearX((-20, 20))),
+                augmenters.Sometimes(
+                    0.1, augmenters.AdditiveGaussianNoise(scale=(0, 0.1 * 255))
+                ),
+            ],
+            random_order=True,
+        )
 
     def __call__(self, image):
         image = np.array(image)

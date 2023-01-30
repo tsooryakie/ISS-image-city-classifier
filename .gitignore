@@ -2,6 +2,7 @@
 iss_image_data/
 __pycache__/
 models_trained/
+venv/
 raw_training_data/
 slurm_scripts/
 classification_reports/

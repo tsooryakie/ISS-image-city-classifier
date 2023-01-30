@@ -4,8 +4,8 @@ to be properly trained by the classifier.
 Version: 26/07/2020
 """
 import os
-import sys
 import shutil
+import sys
 
 
 def delete_small_classes(root_dir: str) -> None:
@@ -26,7 +26,7 @@ def delete_small_classes(root_dir: str) -> None:
             print("Removed: " + root_dir + city)
 
     print("Number of city classes removed: " + str(number_removed))
-    
+
     return
 
 

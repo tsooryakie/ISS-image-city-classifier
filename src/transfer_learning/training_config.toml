@@ -1,0 +1,6 @@
+learning_rate = 0.000066893
+batch_size = 60
+optimizer_name = "Adam"
+weight_decay = 0.000934508
+training_mode = "finetuning"
+epochs=100

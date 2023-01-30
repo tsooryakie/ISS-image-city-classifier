@@ -7,11 +7,12 @@ Version: 11/07/2020
 """
 import os
 import sys
+
 import cv2
 import numpy as np
 
 
-def load_image(image_path: str) -> np.ndarray :
+def load_image(image_path: str) -> np.ndarray:
     """
     This function loads a given ISS image as a Numpy Array in BGR colour space using OpenCV.
     It then converts the image to RGB colour space and returns the new RGB image as a Numpy array.
@@ -19,7 +20,9 @@ def load_image(image_path: str) -> np.ndarray :
     :return:
     """
     image = cv2.imread(image_path)  # Reads image in BGR colour space as a Numpy array
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # Converts BGR Numpy array to RGB colour space Numpy Array
+    image = cv2.cvtColor(
+        image, cv2.COLOR_BGR2RGB
+    )  # Converts BGR Numpy array to RGB colour space Numpy Array
     print("Loaded Image: " + str(image_path))
 
     return image
@@ -66,8 +69,12 @@ def save_as_tiff(img: np.ndarray, image_path: str, mode=None) -> None:
     in the relevant directory.
     """
 
-    image_class = image_path.split("/")[4] + "/"  # Extracts the class name (the city) of the image
-    image_name = image_path.split("/")[-1].split(".jpg")[0] + ".tiff"  # Extracts the ISS image name
+    image_class = (
+        image_path.split("/")[4] + "/"
+    )  # Extracts the class name (the city) of the image
+    image_name = (
+        image_path.split("/")[-1].split(".jpg")[0] + ".tiff"
+    )  # Extracts the ISS image name
 
     if mode == "hsv":
         root_path = "../iss_image_data/hsv_iss_images/train/"
@@ -80,8 +87,12 @@ def save_as_tiff(img: np.ndarray, image_path: str, mode=None) -> None:
     else:
         raise RuntimeError("Improper or No Colour Space Argument Supplied")
 
-    save_path = str(root_path + image_class + image_name)  # Full path to which the image is to be saved to
-    if not os.path.exists(save_path.split(image_name)[0]):  # If the class directory does not exist, creates it
+    save_path = str(
+        root_path + image_class + image_name
+    )  # Full path to which the image is to be saved to
+    if not os.path.exists(
+        save_path.split(image_name)[0]
+    ):  # If the class directory does not exist, creates it
         os.makedirs(save_path.split(image_name)[0])
 
     cv2.imwrite(save_path, img)  # Writes the image to disk
@@ -98,7 +109,9 @@ def main():
     are then applied to each individual image in the "all_images" list.
     """
     all_images = []
-    for root, directories, files in os.walk("../iss_image_data/resized_iss_images/train/"):
+    for root, directories, files in os.walk(
+        "../iss_image_data/resized_iss_images/train/"
+    ):
         for file in files:
             if file.endswith(".jpg"):
                 all_images.append(os.path.join(root, file))

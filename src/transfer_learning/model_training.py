@@ -3,21 +3,24 @@ This is the main program for training transfer learning architectures on the ISS
 It supports training ResNet-101, ResNet-152, VGG-19 and Inception V3.
 Version: 19/07/2020
 """
+import copy
 import os
 import sys
 import time
-import copy
+from typing import Tuple, Dict, List
+
 import PIL
+import matplotlib.pyplot as plt
 import numpy as np
+import toml
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torch.utils.data import DataLoader
 import torchvision as vision
-import matplotlib.pyplot as plt
-from Augmentation import Augmentation
-import VisualiseAugmentation as VisAugment
-from typing import Tuple, Dict, List
+from torch.utils.data import DataLoader
+
+import augmentation_visualisation as vis_augment
+from image_augmentation import Augmentation
 
 
 def load_dataset_and_transforms(
@@ -25,7 +28,7 @@ def load_dataset_and_transforms(
 ) -> Tuple[Dict, List]:
     """
     This function loads the dataset, applies transformations to the images and creates
-    the data loader which is used used in the training step to train the CNN.
+    the data loader which is used in the training step to train the CNN.
     :param dataset_path: Path to the dataset to use for training and validation
     :param batch_size: Batch size to use for training (number of training samples used per training iteration)
     :param uses_inception: Pre-trained InceptionV3 model has different input and an auxiliary outputs,
@@ -446,23 +449,34 @@ def plot_model_history(
 def main():
     model_name = sys.argv[1]
 
+    config = toml.load("training_config.toml")
+
     if model_name == "InceptionV3":
         uses_inception = True
     else:
         uses_inception = False
 
     data_loaders, classes = load_dataset_and_transforms(
-        "../iss_image_data/experiment3/", uses_inception, augment=True, batch_size=60
+        "../iss_image_data/experiment3/",
+        uses_inception,
+        augment=True,
+        batch_size=config["batch_size"],
     )
-    VisAugment.visualise_augmented_images(data_loaders, classes)
+    vis_augment.visualise_augmented_images(data_loaders, classes)
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print("Device being used for training: " + str(device))
     model, input_size = initialise_model(model_name, len(classes), freeze_all=False)
-    parameters_to_learn = get_parameters_to_learn(model, training_mode="finetuning")
+    parameters_to_learn = get_parameters_to_learn(
+        model, training_mode=config["training_mode"]
+    )
     model = model.to(device)
 
-    optimizer = optim.Adam(parameters_to_learn, lr=6.6893e-05, weight_decay=0.000934508)
+    optimizer = optim.Adam(
+        parameters_to_learn,
+        lr=config["learning_rate"],
+        weight_decay=config["weight_decay"],
+    )
     criterion = nn.CrossEntropyLoss()
 
     print("\nStarting model training...")
@@ -474,14 +488,14 @@ def main():
         optimizer,
         model_name,
         uses_inception,
-        epochs=100,
+        epochs=config["epochs"],
     )
 
     # Extra variables for plotting
-    learning_rate = 6.6893e-05
-    batch_size = 60
-    optimizer_name = "Adam"
-    weight_decay = 0.000934508
+    learning_rate = config["learning_rate"]
+    batch_size = config["batch_size"]
+    optimizer_name = config["optimizer_name"]
+    weight_decay = config["weight_decay"]
     plot_model_history(
         history, model_name, learning_rate, batch_size, optimizer_name, weight_decay
     )

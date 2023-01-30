@@ -4,9 +4,9 @@ images from the dataset which will then be fed into the CNN via dataloader
 Version: 08/08/2020
 """
 
+import matplotlib.pyplot as plt
 import numpy as np
 import torchvision
-import matplotlib.pyplot as plt
 
 
 def undo_normalisation(image):
@@ -32,10 +32,10 @@ def visualise_augmented_images(image_dataset, class_names):
     :return:
     """
     images, indices = next(iter(image_dataset["train"]))
-    
+
     input_images = torchvision.utils.make_grid(images)
-    
-    plt.figure(figsize=(10,8))
+
+    plt.figure(figsize=(10, 8))
     plt.imshow(undo_normalisation(input_images))
     plt.title("Batch Visualisation with Augmentation")
     plt.axis("off")

@@ -5,6 +5,7 @@ Version: 06/07/2020
 """
 import os
 import sys
+
 import cv2
 
 
@@ -18,8 +19,13 @@ def resize_image(image_path: str) -> None:
 
     image = cv2.imread(image_path)
 
-    CNN_DIMENSIONS = (224, 224)  # Output image dimensions - 224x224 pixels for pre-trained CNN input images
-    image = cv2.resize(image, CNN_DIMENSIONS, interpolation=cv2.INTER_AREA)  # Appropriate Interpolation for shrinking
+    CNN_DIMENSIONS = (
+        224,
+        224,
+    )  # Output image dimensions - 224x224 pixels for pre-trained CNN input images
+    image = cv2.resize(
+        image, CNN_DIMENSIONS, interpolation=cv2.INTER_AREA
+    )  # Appropriate Interpolation for shrinking
 
     print("Resized Image: " + image_path + " at dimensions: " + str(image.shape))
 
